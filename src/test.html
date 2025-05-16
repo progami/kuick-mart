@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Orders Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Orders Table Connectivity Test</h1>
+    <p>You will need to manually put a valid user_id in the script below.</p>
+    <p>Check the console.</p>
+    <script>
+        const SUPABASE_URL = 'https://ghekywzdxzyipibwjcon.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZWt5d3pkeHp5aXBpYndqY29uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5MDg5NzYsImV4cCI6MjA2MjQ4NDk3Nn0.udK9ijO9CYL1dJiDGqQa1djx9I7QpqmQHodKIBGdP70';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // !!!!! IMPORTANT: Manually replace this with a REAL user_id from your database that has orders !!!!!
+        const TEST_USER_ID = 'b136d96e-1f57-43cf-b390-6dc3f28ed4fa'; // Example, REPLACE THIS
+
+        async function testOrdersFetch() {
+            if (!TEST_USER_ID) {
+                console.error("TEST_USER_ID is not set in the script. Please edit test_supabase.html");
+                return;
+            }
+            console.log(`Attempting to fetch orders for user_id: ${TEST_USER_ID}...`);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('order_id, total_price, ordered_at, status') // Simple select
+                    .eq('user_id', TEST_USER_ID)
+                    .limit(5);
+
+                if (error) {
+                    console.error('Error fetching orders:', error);
+                } else {
+                    console.log('Orders data (limit 5):', data);
+                    if (data && data.length > 0) {
+                        console.log('Successfully fetched orders!');
+                    } else if (data && data.length === 0) {
+                        console.log('Fetched orders, but no orders found for this user_id or table is empty.');
+                    } else {
+                        console.log('Fetched orders, but data is null/undefined.');
+                    }
+                }
+            } catch (e) {
+                console.error('Catch block error during orders fetch:', e);
+            }
+        }
+        testOrdersFetch();
+    </script>
+</body>
+</html>
